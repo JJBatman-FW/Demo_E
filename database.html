@@ -436,14 +436,38 @@
                 </div>
             </div>
             <div class="modal-body-area">
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px;">
+                    <div
+                        style="background: #fdfdfd; padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); text-align: center;">
+                        <div style="font-size: 0.85rem; color: #666; font-weight: bold;">115年度編列數</div>
+                        <div id="u-val-this-year"
+                            style="font-size: 1.15rem; font-weight: 900; color: var(--secondary-color); margin-top: 5px;">
+                            -</div>
+                    </div>
+                    <div
+                        style="background: #fdfdfd; padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); text-align: center;">
+                        <div style="font-size: 0.85rem; color: #666; font-weight: bold;">審定法定預算數</div>
+                        <div id="u-val-approved"
+                            style="font-size: 1.15rem; font-weight: 900; color: var(--danger-color); margin-top: 5px;">-
+                        </div>
+                    </div>
+                    <div
+                        style="background: #fdfdfd; padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); text-align: center;">
+                        <div style="font-size: 0.85rem; color: #666; font-weight: bold;">114年度法定預算數</div>
+                        <div id="u-val-last-year"
+                            style="font-size: 1.15rem; font-weight: 900; color: #555; margin-top: 5px;">-</div>
+                    </div>
+                </div>
+
                 <div
                     style="background:var(--bg-color); padding:20px; border-radius:12px; margin-bottom:25px; border:1px solid var(--border-color);">
-                    <strong style="color:var(--secondary-color); font-size:1.1rem;">計畫內容：</strong>
-                    <div style="margin-top:10px;"><span id="u-desc" style="color:#333;"></span></div>
+                    <strong style="color:var(--secondary-color); font-size:1.1rem;">工作內容：</strong>
+                    <div style="margin-top:10px; line-height: 1.7;"><span id="u-desc" style="color:#333;"></span></div>
                 </div>
+
                 <div class="mini-chart-box">
-                    <h4>用途比例</h4>
-                    <div style="height:200px;"><canvas id="chartDetailPie"></canvas></div>
+                    <h4 style="margin:0 0 15px 0;">用途分配比例</h4>
+                    <div style="height:220px;"><canvas id="chartDetailPie"></canvas></div>
                 </div>
             </div>
         </div>
@@ -479,7 +503,7 @@
         function formatCurrency(num) {
             let val = parseFloat(num);
             if (isNaN(val) || val === 0) return "0";
-            
+
             let absVal = Math.abs(val);
             let sign = val < 0 ? "-" : "";
 
@@ -692,28 +716,63 @@
             const planData = allDataPageA.find(r => r['計畫編號'] === id);
             if (!planData) return;
 
+            // 1. 設定標題與機關
             document.getElementById('u-title').innerHTML = highlightContent(planData['計畫名稱'], currentSearchKeyword);
             document.getElementById('u-dept').innerText = planData['主管機關'];
-            document.getElementById('u-amount').innerText = formatCurrency(parseMoney(planData['預算金額']));
-            document.getElementById('u-desc').innerHTML = highlightContent(planData['工作內容'] || '無', currentSearchKeyword);
 
-            // 圓餅圖
+            // 2. 處理三個預算數字 (防錯處理)
+            // 今年編列數 (115)
+            const valThisYear = planData['預算金額'];
+            document.getElementById('u-val-this-year').innerText = (valThisYear && parseMoney(valThisYear) !== 0)
+                ? formatCurrency(parseMoney(valThisYear)) : "目前無資料";
+
+            // 審定後的法定預算數 (假設欄位名為 '審定數' 或 '法定預算', 若讀不到會顯示目前無資料)
+            const valApproved = planData['審定數'] || planData['法定預算數'];
+            document.getElementById('u-val-approved').innerText = (valApproved && parseMoney(valApproved) !== 0)
+                ? formatCurrency(parseMoney(valApproved)) : "尚未審定";
+
+            // 去年的法定預算數 (114)
+            const valLastYear = planData['114年預算金額'];
+            document.getElementById('u-val-last-year').innerText = (valLastYear && parseMoney(valLastYear) !== 0)
+                ? formatCurrency(parseMoney(valLastYear)) : "目前無資料";
+
+            // 3. 工作內容
+            const desc = planData['工作內容'];
+            document.getElementById('u-desc').innerHTML = (desc && desc.trim() !== "")
+                ? highlightContent(desc, currentSearchKeyword) : "目前無資料";
+
+            // 4. 用途比例圓餅圖
             let pieLabels = [], pieData = [];
-            (planData['用途比例'] || '').split('|').forEach(item => {
-                let parts = item.split(':');
-                if (parts.length === 2) {
-                    pieLabels.push(parts[0].trim());
-                    // 【修正】改用 parseMoney() 處理，它會自動將千元單位 * 1000
-                    pieData.push(parseMoney(parts[1].trim()));
-                }
-            });
+            const rawPie = planData['用途比例'];
+
+            if (rawPie && rawPie.includes(':')) {
+                rawPie.split('|').forEach(item => {
+                    let parts = item.split(':');
+                    if (parts.length === 2) {
+                        pieLabels.push(parts[0].trim());
+                        pieData.push(parseMoney(parts[1].trim())); // 自動處理千元轉元
+                    }
+                });
+            }
 
             if (chartPieA) chartPieA.destroy();
-            chartPieA = new Chart(document.getElementById('chartDetailPie').getContext('2d'), {
-                type: 'pie', data: { labels: pieLabels, datasets: [{ data: pieData, backgroundColor: ['#E74C3C', '#F0C808', '#086788', '#2ECC71', '#9B59B6'] }] },
-                options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, tooltip: tooltipCurrencyCallback } }
-            });
 
+            if (pieData.length > 0) {
+                chartPieA = new Chart(document.getElementById('chartDetailPie').getContext('2d'), {
+                    type: 'pie',
+                    data: {
+                        labels: pieLabels,
+                        datasets: [{ data: pieData, backgroundColor: ['#E74C3C', '#F0C808', '#086788', '#2ECC71', '#9B59B6', '#3498DB'] }]
+                    },
+                    options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, tooltip: tooltipCurrencyCallback } }
+                });
+                document.getElementById('chartDetailPie').parentElement.style.display = 'block';
+            } else {
+                // 如果沒資料，隱藏圖表區域或顯示無資料
+                document.getElementById('chartDetailPie').parentElement.style.display = 'none';
+            }
+
+            // 顯示 Modal
             document.getElementById('unifiedModal').style.display = 'flex';
         }
 
