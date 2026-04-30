@@ -104,12 +104,7 @@
         .close-btn { position: absolute; top: 20px; right: 25px; font-size: 2.5rem; cursor: pointer; color: #aaa; z-index: 10; line-height: 0.8;}
         .close-btn:hover { color: var(--danger-color); }
         .modal-header-area { padding: 30px; border-bottom: 1px solid #eee; background-color: #fff; }
-        .modal-tabs { display: flex; background: var(--bg-color); border-bottom: 2px solid var(--border-color); }
-        .modal-tab { flex: 1; text-align: center; padding: 18px; cursor: pointer; font-weight: bold; color: #777; border-bottom: 4px solid transparent; }
-        .modal-tab.active { color: var(--secondary-color); border-bottom-color: var(--secondary-color); background: white; }
-        .modal-body-area { padding: 30px; overflow-y: auto; max-height: calc(90vh - 180px); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s; }
+        .modal-body-area { padding: 30px; overflow-y: auto; max-height: calc(90vh - 120px); }
         .mini-chart-box { text-align: center; background: #fff; padding: 20px; border: 1px solid var(--border-color); border-radius: 12px; margin-top: 15px;}
         
         .highlight-text { background-color: #ffeb3b !important; color: #000 !important; font-weight: 900 !important; padding: 2px 4px !important; border-radius: 4px !important; }
@@ -117,7 +112,6 @@
         .spinner { border: 6px solid #f3f3f3; border-top: 6px solid var(--secondary-color); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .chart-container { position: relative; height: 200px; width: 100%; }
 
         @media (max-width: 768px) {
             .ministry-filters { flex-direction: column; }
@@ -144,18 +138,15 @@
 
     <main>
         <div class="card">
-            <h3>各機關審查分析</h3>
+            <h3>各機關計畫總覽</h3>
             <div class="ministry-filters" style="display:flex; gap:10px; margin-bottom:20px;">
-                <select id="bp-filter-ministry" class="ministry-select" onchange="updateBudgetPageReview()">
+                <select id="bp-filter-ministry" class="ministry-select" onchange="updateAgencyView()">
                     <option value="">讀取中...</option>
                 </select>
-                <select id="bp-filter-unit" class="ministry-select" onchange="updateBudgetPageReview()">
+                <select id="bp-filter-unit" class="ministry-select" onchange="updateAgencyView()">
                     <option value="">請選擇主管機關</option>
                 </select>
             </div>
-            <div id="bp-review-caption" style="text-align:center; color:#666; font-size:0.9rem; margin-bottom:10px;">請選擇機關以查看審查結果比例</div>
-            <div class="chart-container"><canvas id="chartBudgetPageReview"></canvas></div>
-            
             <div id="agency-project-list" style="margin-top:20px;"></div>
             <div id="agency-pagination" class="pagination-container"></div>
         </div>
@@ -180,29 +171,14 @@
                 <h2 id="u-title" style="margin:0 0 10px 0; color:var(--primary-color); font-size:1.6rem;"></h2>
                 <div><span id="u-dept" class="pb-dept"></span><span id="u-amount" style="font-weight:900; color:var(--secondary-color); margin-left:15px; font-size:1.3rem;"></span></div>
             </div>
-            <div class="modal-tabs">
-                <div class="modal-tab active" onclick="switchTab('plan')">工作計畫內容</div>
-                <div class="modal-tab" onclick="switchTab('review')">審查刪減結果</div>
-            </div>
             <div class="modal-body-area">
-                <div id="tab-content-plan" class="tab-content active">
-                    <div style="background:var(--bg-color); padding:20px; border-radius:12px; margin-bottom:25px; border:1px solid var(--border-color);">
-                        <strong style="color:var(--secondary-color); font-size:1.1rem;">內容：</strong>
-                        <div style="margin-top:10px;"><span id="u-desc" style="color:#333;"></span></div>
-                    </div>
-                    <div class="mini-chart-box">
-                        <h4>用途比例</h4>
-                        <div style="height:200px;"><canvas id="chartDetailPie"></canvas></div>
-                    </div>
+                <div style="background:var(--bg-color); padding:20px; border-radius:12px; margin-bottom:25px; border:1px solid var(--border-color);">
+                    <strong style="color:var(--secondary-color); font-size:1.1rem;">計畫內容：</strong>
+                    <div style="margin-top:10px;"><span id="u-desc" style="color:#333;"></span></div>
                 </div>
-                <div id="tab-content-review" class="tab-content">
-                    <div id="review-data-container">
-                        <div class="mini-chart-box">
-                            <h4>最終審查結果比例</h4>
-                            <div style="height:200px;"><canvas id="chartBResult"></canvas></div>
-                        </div>
-                    </div>
-                    <div id="review-no-data" style="display:none; text-align:center; padding: 3rem; color:#999;">此計畫尚無審查刪減資料。</div>
+                <div class="mini-chart-box">
+                    <h4>用途比例</h4>
+                    <div style="height:200px;"><canvas id="chartDetailPie"></canvas></div>
                 </div>
             </div>
         </div>
@@ -211,26 +187,19 @@
     <script>
         // 1. 基本設定與共用變數
         const FILE_ID = '1Qft9FVm9XtT3SVzbgX1NSduPP0sBR3CdGqiUsm-Mmrs';
+        // 【優化】這裡只保留讀取 A表 (計畫總覽) 的連結，完全不讀取 B表
         const getQueryUrl = (gid) => `https://docs.google.com/spreadsheets/d/${FILE_ID}/gviz/tq?tqx=out:json&tq&gid=${gid}&_=${new Date().getTime()}`;
+        const sourcePageA = getQueryUrl('612819456');
 
-        let allDataPageA = []; // A表：計畫資料
-        let allDataPageB = []; // B表：審查資料
-        
+        let allDataPageA = []; 
         let currentSearchKeyword = '';
         
-        // 機關分頁變數
-        let currentAgencyProjects = [];
-        let agencyCurrentPage = 1;
-        
-        // 搜尋分頁變數
-        let currentSearchResults = [];
-        let searchCurrentPage = 1;
+        // 分頁變數
+        let currentAgencyProjects = [], agencyCurrentPage = 1;
+        let currentSearchResults = [], searchCurrentPage = 1;
         const ITEMS_PER_PAGE = 5;
 
-        // 圖表實例
-        let chartBudgetPageReview = null;
         let chartPieA = null;
-        let chartBResult = null;
 
         // 工具函式
         function parseMoney(str) {
@@ -277,30 +246,26 @@
         // 2. 資料載入與初始化
         async function initPage() {
             try {
-                const [resA, resB] = await Promise.all([ fetch(getQueryUrl('612819456')), fetch(getQueryUrl('1304436957')) ]);
+                // 【優化】只請求一份試算表，速度更快
+                const resA = await fetch(sourcePageA);
                 const textA = await resA.text();
-                const textB = await resB.text();
                 
-                allDataPageA = parseQueryResponse(JSON.parse(textA.substring(47, textA.length - 2)));
-                allDataPageB = parseQueryResponse(JSON.parse(textB.substring(47, textB.length - 2)));
+                const jsonData = JSON.parse(textA.substring(47, textA.length - 2));
+                const cols = jsonData.table.cols.map(c => c.label).filter(l => l !== '');
+                allDataPageA = jsonData.table.rows.map(row => {
+                    let obj = {};
+                    row.c.forEach((cell, i) => { if (cols[i]) obj[cols[i]] = cell ? (cell.v !== null ? String(cell.v) : '') : ''; });
+                    return obj;
+                });
                 
                 document.getElementById('loader').style.display = 'none';
                 
                 initFilters();
-                checkUrlParams(); // 檢查跨頁傳來的參數
+                checkUrlParams(); 
             } catch (error) {
                 console.error("資料庫載入失敗:", error);
                 document.getElementById('loader').innerHTML = '<p style="color:red; font-weight:bold;">資料讀取失敗，請確認 Google Sheet 權限設定。</p>';
             }
-        }
-
-        function parseQueryResponse(jsonData) {
-            const cols = jsonData.table.cols.map(c => c.label).filter(l => l !== '');
-            return jsonData.table.rows.map(row => {
-                let obj = {};
-                row.c.forEach((cell, i) => { if (cols[i]) obj[cols[i]] = cell ? (cell.v !== null ? String(cell.v) : '') : ''; });
-                return obj;
-            });
         }
 
         // 接收跨頁參數自動搜尋
@@ -317,29 +282,21 @@
             }
         }
 
-        // 3. 機關選單與圖表邏輯
+        // 3. 機關選單與列表邏輯
         function initFilters() {
             const ministrySelect = document.getElementById('bp-filter-ministry');
             const ministries = [...new Set(allDataPageA.map(d => d['所屬部會']))].filter(m => m).sort();
             ministrySelect.innerHTML = '<option value="">請選擇所屬部會 (全國總覽)</option>' + ministries.map(m => `<option value="${m}">${m}</option>`).join('');
-            updateBudgetPageReview();
+            updateAgencyView();
         }
 
-        function calculateAgencyStats(agencyName) {
-            let projects = allDataPageA.filter(p => (p['主管機關'] || '') === agencyName);
-            let totalBudget = projects.reduce((sum, p) => sum + parseMoney(p['預算金額']), 0);
-            let reviews = allDataPageB.filter(r => (r['主管機關'] || '') === agencyName);
-            let totalCut = reviews.reduce((sum, r) => sum + parseMoney(r['刪減金額']), 0);
-            let totalFreeze = reviews.reduce((sum, r) => sum + parseMoney(r['凍結金額']), 0);
-            return { totalBudget, totalCut, totalFreeze };
-        }
-
-        function updateBudgetPageReview() {
+        // 【重構】原 updateBudgetPageReview 改名為 updateAgencyView，並移除審查邏輯
+        function updateAgencyView() {
             const ministrySelect = document.getElementById('bp-filter-ministry');
             const unitSelect = document.getElementById('bp-filter-unit');
             const selectedMinistry = ministrySelect.value;
             
-            // 連動邏輯
+            // 連動選單
             if (selectedMinistry) {
                 const agencies = [...new Set(allDataPageA.filter(d => d['所屬部會'] === selectedMinistry).map(d => d['主管機關']))].filter(a => a).sort();
                 if (unitSelect.getAttribute('data-last') !== selectedMinistry) {
@@ -353,43 +310,16 @@
             }
 
             const selectedAgency = unitSelect.value;
-            let totalBudget = 0, totalCut = 0, totalFreeze = 0;
-            let titleText = "";
             let filteredProjects = [];
 
-            // 過濾與計算邏輯 (含 0 元隱藏)
+            // 純粹的過濾邏輯 (隱藏 0 元與機關層級)
             if (selectedAgency) {
-                const stats = calculateAgencyStats(selectedAgency);
-                totalBudget = stats.totalBudget; totalCut = stats.totalCut; totalFreeze = stats.totalFreeze;
-                titleText = selectedAgency;
                 filteredProjects = allDataPageA.filter(d => d['主管機關'] === selectedAgency && !d['計畫編號'].endsWith('000000') && parseMoney(d['預算金額']) > 0);
             } else if (selectedMinistry) {
-                titleText = selectedMinistry + " (全體)";
-                const ministryProjects = allDataPageA.filter(d => d['所屬部會'] === selectedMinistry);
-                ministryProjects.forEach(p => { totalBudget += parseMoney(p['預算金額']); });
-                const agenciesInMinistry = [...new Set(ministryProjects.map(p => p['主管機關']))];
-                allDataPageB.forEach(r => { if (agenciesInMinistry.includes(r['主管機關'])) { totalCut += parseMoney(r['刪減金額']); totalFreeze += parseMoney(r['凍結金額']); } });
-                filteredProjects = ministryProjects.filter(d => !d['計畫編號'].endsWith('000000') && parseMoney(d['預算金額']) > 0);
+                filteredProjects = allDataPageA.filter(d => d['所屬部會'] === selectedMinistry && !d['計畫編號'].endsWith('000000') && parseMoney(d['預算金額']) > 0);
             } else {
-                titleText = "全國總覽";
-                allDataPageA.forEach(p => totalBudget += parseMoney(p['預算金額']));
-                allDataPageB.forEach(r => { totalCut += parseMoney(r['刪減金額']); totalFreeze += parseMoney(r['凍結金額']); });
-                filteredProjects = []; 
+                filteredProjects = []; // 全國總覽時不顯示列表
             }
-
-            const totalPass = totalBudget - totalCut - totalFreeze;
-            const pctPass = totalBudget > 0 ? (totalPass / totalBudget * 100).toFixed(1) : 0;
-            const pctCut = totalBudget > 0 ? (totalCut / totalBudget * 100).toFixed(1) : 0;
-            const pctFreeze = totalBudget > 0 ? (totalFreeze / totalBudget * 100).toFixed(1) : 0;
-
-            document.getElementById('bp-review-caption').innerHTML = `<span style="color:var(--primary-color); font-weight:bold;">${titleText}</span> 總預算：${formatCurrency(totalBudget)}<br>通過：<b>${pctPass}%</b> | <span style="color:#E74C3C">刪減：<b>${pctCut}%</b></span> | <span style="color:#F0C808">凍結：<b>${pctFreeze}%</b></span>`;
-
-            if (chartBudgetPageReview) chartBudgetPageReview.destroy();
-            chartBudgetPageReview = new Chart(document.getElementById('chartBudgetPageReview').getContext('2d'), {
-                type: 'bar',
-                data: { labels: ['審查結果'], datasets: [ { label: '通過', data: [totalPass], backgroundColor: '#086788', barThickness: 40 }, { label: '凍結', data: [totalFreeze], backgroundColor: '#F0C808', barThickness: 40 }, { label: '刪減', data: [totalCut], backgroundColor: '#E74C3C', barThickness: 40 } ] },
-                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, display: false, max: totalBudget }, y: { stacked: true, display: false } }, plugins: { legend: { position: 'bottom' }, tooltip: tooltipCurrencyCallback } }
-            });
 
             currentAgencyProjects = filteredProjects;
             agencyCurrentPage = 1;
@@ -432,7 +362,7 @@
 
             currentSearchResults = allDataPageA.filter(r => {
                 const amt = parseMoney(r['預算金額']);
-                if (amt === 0) return false; // 嚴格隱藏 0 元計畫
+                if (amt === 0) return false; 
                 if (String(r['計畫編號']).includes('000000') || String(r['計畫名稱']).includes('統刪')) return false;
 
                 let rawText = (r['計畫名稱'] + (r['工作內容'] || '') + (r['主管機關'] || '') + (r['分支計畫'] || '')).toLowerCase();
@@ -482,54 +412,30 @@
 
         // 7. Modal 詳情與圖表
         function closeModal(e, id) { if(e && e.target.id !== id && e.target.className !== 'close-btn') return; document.getElementById(id).style.display = 'none'; }
-        function switchTab(tab) {
-            document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            if(tab === 'plan') { document.querySelector('.modal-tab:first-child').classList.add('active'); document.getElementById('tab-content-plan').classList.add('active'); }
-            else { document.querySelector('.modal-tab:last-child').classList.add('active'); document.getElementById('tab-content-review').classList.add('active'); }
-        }
 
+        // 【重構】開啟計畫詳情 (僅顯示計畫內容與圓餅圖)
         function openUnifiedDetail(id) {
             const planData = allDataPageA.find(r => r['計畫編號'] === id);
-            const reviewData = allDataPageB.find(r => r['計畫編號'] === id);
-            if (!planData && !reviewData) return;
-            const baseData = planData || reviewData;
+            if (!planData) return;
 
-            document.getElementById('u-title').innerHTML = highlightContent(baseData['計畫名稱'], currentSearchKeyword);
-            document.getElementById('u-dept').innerText = baseData['主管機關'];
-            document.getElementById('u-amount').innerText = formatCurrency(parseMoney(baseData['預算金額']));
+            document.getElementById('u-title').innerHTML = highlightContent(planData['計畫名稱'], currentSearchKeyword);
+            document.getElementById('u-dept').innerText = planData['主管機關'];
+            document.getElementById('u-amount').innerText = formatCurrency(parseMoney(planData['預算金額']));
+            document.getElementById('u-desc').innerHTML = highlightContent(planData['工作內容'] || '無', currentSearchKeyword);
+            
+            // 圓餅圖
+            let pieLabels = [], pieData = [];
+            (planData['用途比例'] || '').split('|').forEach(item => {
+                let parts = item.split(':');
+                if (parts.length === 2) { pieLabels.push(parts[0].trim()); pieData.push(parseInt(parts[1].trim())); }
+            });
+            
+            if(chartPieA) chartPieA.destroy();
+            chartPieA = new Chart(document.getElementById('chartDetailPie').getContext('2d'), {
+                type: 'pie', data: { labels: pieLabels, datasets: [{ data: pieData, backgroundColor: ['#E74C3C', '#F0C808', '#086788', '#2ECC71', '#9B59B6'] }] },
+                options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, tooltip: tooltipCurrencyCallback } }
+            });
 
-            if (planData) {
-                document.getElementById('u-desc').innerHTML = highlightContent(planData['工作內容'] || '無', currentSearchKeyword);
-                
-                // 圓餅圖
-                let pieLabels = [], pieData = [];
-                (planData['用途比例'] || '').split('|').forEach(item => {
-                    let parts = item.split(':');
-                    if (parts.length === 2) { pieLabels.push(parts[0].trim()); pieData.push(parseInt(parts[1].trim())); }
-                });
-                if(chartPieA) chartPieA.destroy();
-                chartPieA = new Chart(document.getElementById('chartDetailPie').getContext('2d'), {
-                    type: 'pie', data: { labels: pieLabels, datasets: [{ data: pieData, backgroundColor: ['#E74C3C', '#F0C808', '#086788', '#2ECC71', '#9B59B6'] }] },
-                    options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, tooltip: tooltipCurrencyCallback } }
-                });
-            } else { document.getElementById('u-desc').innerText = '此計畫無詳細編列內容資料。'; }
-
-            if (reviewData) {
-                document.getElementById('review-data-container').style.display = 'block';
-                document.getElementById('review-no-data').style.display = 'none';
-                const total = parseMoney(reviewData['預算金額']), cut = parseMoney(reviewData['刪減金額']), freeze = parseMoney(reviewData['凍結金額']), pass = total - cut - freeze;
-                if(chartBResult) chartBResult.destroy();
-                chartBResult = new Chart(document.getElementById('chartBResult').getContext('2d'), {
-                    type: 'bar', data: { labels: ['審查結果'], datasets: [{ label: '通過', data: [pass], backgroundColor: '#086788' }, { label: '凍結', data: [freeze], backgroundColor: '#F0C808' }, { label: '刪減', data: [cut], backgroundColor: '#E74C3C' }] },
-                    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, display: false }, y: { stacked: true, display: false } }, plugins: { tooltip: tooltipCurrencyCallback } }
-                });
-            } else {
-                document.getElementById('review-data-container').style.display = 'none';
-                document.getElementById('review-no-data').style.display = 'block';
-            }
-
-            switchTab('plan');
             document.getElementById('unifiedModal').style.display = 'flex';
         }
 
