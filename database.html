@@ -21,7 +21,9 @@
             --border-color: #e0e0e0;
         }
 
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             font-family: "Noto Sans TC", sans-serif;
@@ -49,74 +51,333 @@
         }
 
         header h1 {
-            margin: 0; font-size: 1.4rem; font-weight: 900; color: var(--secondary-color);
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--secondary-color);
         }
 
-        header nav { display: flex; gap: 10px; align-items: center; }
+        header nav {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
 
         .nav-btn {
-            background: transparent; border: 2px solid var(--secondary-color); color: var(--secondary-color);
-            padding: 6px 12px; cursor: pointer; border-radius: 6px; font-size: 0.9rem; transition: 0.2s; font-weight: bold; text-decoration: none;
+            background: transparent;
+            border: 2px solid var(--secondary-color);
+            color: var(--secondary-color);
+            padding: 6px 12px;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            font-weight: bold;
+            text-decoration: none;
         }
 
-        .nav-btn:hover { background: var(--secondary-color); color: white; }
-        .nav-active { background: var(--secondary-color) !important; color: white !important; }
+        .nav-btn:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .nav-active {
+            background: var(--secondary-color) !important;
+            color: white !important;
+        }
 
         /* Main Layout */
-        main { padding: 2rem; max-width: 1200px; margin: 0 auto; flex: 1; width: 100%; }
-        .card { background: var(--card-bg); padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); margin-bottom: 2rem; border: 1px solid var(--border-color); }
-        .card h3 { color: var(--primary-color); margin-top: 0; font-weight: 700; border-bottom: 2px solid var(--bg-color); padding-bottom: 10px; }
+        main {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex: 1;
+            width: 100%;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .card h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            font-weight: 700;
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 10px;
+        }
 
         /* Selectors & Search */
-        .ministry-select { flex: 1; padding: 10px 15px; border: 2px solid var(--border-color); border-radius: 8px; font-size: 1rem; color: var(--primary-color); outline: none; transition: 0.2s; }
-        .ministry-select:focus { border-color: var(--secondary-color); }
-        .search-wrapper { margin: 1rem 0; text-align: center; width: 100%; }
-        .search-input-lg { width: 100%; padding: 15px 25px; font-size: 1.1rem; border: 3px solid var(--border-color); border-radius: 50px; outline: none; transition: 0.3s; }
-        .search-input-lg:focus { border-color: var(--secondary-color); box-shadow: 0 0 0 4px rgba(8, 103, 136, 0.15); }
+        .ministry-select {
+            flex: 1;
+            padding: 10px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            color: var(--primary-color);
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .ministry-select:focus {
+            border-color: var(--secondary-color);
+        }
+
+        .search-wrapper {
+            margin: 1rem 0;
+            text-align: center;
+            width: 100%;
+        }
+
+        .search-input-lg {
+            width: 100%;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            border: 3px solid var(--border-color);
+            border-radius: 50px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .search-input-lg:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 4px rgba(8, 103, 136, 0.15);
+        }
 
         /* 搜尋結果統計條 */
         .search-summary-bar {
-            background: linear-gradient(135deg, #e0f7fa, #fff); border: 2px solid var(--secondary-color); border-radius: 12px;
-            padding: 15px 25px; margin: 20px auto; text-align: center; font-size: 1.1rem; display: none; animation: fadeIn 0.5s;
+            background: linear-gradient(135deg, #e0f7fa, #fff);
+            border: 2px solid var(--secondary-color);
+            border-radius: 12px;
+            padding: 15px 25px;
+            margin: 20px auto;
+            text-align: center;
+            font-size: 1.1rem;
+            display: none;
+            animation: fadeIn 0.5s;
         }
-        .search-summary-highlight { color: #E74C3C; font-weight: 900; font-size: 1.4rem; }
+
+        .search-summary-highlight {
+            color: #E74C3C;
+            font-weight: 900;
+            font-size: 1.4rem;
+        }
 
         /* Project Cards */
         .project-block {
-            background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-            display: grid; grid-template-columns: 1fr auto; gap: 15px; cursor: pointer; border: 2px solid var(--border-color); border-left: 8px solid var(--accent-color); transition: 0.2s;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 15px;
+            cursor: pointer;
+            border: 2px solid var(--border-color);
+            border-left: 8px solid var(--accent-color);
+            transition: 0.2s;
         }
-        .project-block:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); border-color: var(--secondary-color); }
-        .pb-info { display: flex; flex-direction: column; justify-content: center; }
-        .pb-title { font-size: 1.2rem; font-weight: bold; margin: 0 0 8px 0; }
-        .pb-dept { background: var(--bg-color); color: var(--secondary-color); padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; width: fit-content; border: 1px solid rgba(8, 103, 136, 0.3); }
-        .pb-amount { font-size: 1.5rem; color: var(--secondary-color); font-weight: 900; text-align: right; }
+
+        .project-block:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            border-color: var(--secondary-color);
+        }
+
+        .pb-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .pb-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 0 0 8px 0;
+        }
+
+        .pb-dept {
+            background: var(--bg-color);
+            color: var(--secondary-color);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            width: fit-content;
+            border: 1px solid rgba(8, 103, 136, 0.3);
+        }
+
+        .pb-amount {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            font-weight: 900;
+            text-align: right;
+        }
 
         /* Pagination */
-        .pagination-container { display: flex; justify-content: center; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
-        .page-btn { background: white; border: 1px solid var(--border-color); color: var(--secondary-color); padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .page-btn:hover { background: #e0f7fa; border-color: var(--secondary-color); }
-        .page-btn.active { background: var(--secondary-color); color: white; border-color: var(--secondary-color); }
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .page-btn {
+            background: white;
+            border: 1px solid var(--border-color);
+            color: var(--secondary-color);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .page-btn:hover {
+            background: #e0f7fa;
+            border-color: var(--secondary-color);
+        }
+
+        .page-btn.active {
+            background: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
 
         /* Modal Styles */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-content { background: var(--card-bg); width: 95%; max-width: 900px; max-height: 90vh; border-radius: 16px; padding: 0; overflow: hidden; display: flex; flex-direction: column; position: relative;}
-        .close-btn { position: absolute; top: 20px; right: 25px; font-size: 2.5rem; cursor: pointer; color: #aaa; z-index: 10; line-height: 0.8;}
-        .close-btn:hover { color: var(--danger-color); }
-        .modal-header-area { padding: 30px; border-bottom: 1px solid #eee; background-color: #fff; }
-        .modal-body-area { padding: 30px; overflow-y: auto; max-height: calc(90vh - 120px); }
-        .mini-chart-box { text-align: center; background: #fff; padding: 20px; border: 1px solid var(--border-color); border-radius: 12px; margin-top: 15px;}
-        
-        .highlight-text { background-color: #ffeb3b !important; color: #000 !important; font-weight: 900 !important; padding: 2px 4px !important; border-radius: 4px !important; }
-        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 2000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .spinner { border: 6px solid #f3f3f3; border-top: 6px solid var(--secondary-color); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            width: 95%;
+            max-width: 900px;
+            max-height: 90vh;
+            border-radius: 16px;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 2.5rem;
+            cursor: pointer;
+            color: #aaa;
+            z-index: 10;
+            line-height: 0.8;
+        }
+
+        .close-btn:hover {
+            color: var(--danger-color);
+        }
+
+        .modal-header-area {
+            padding: 30px;
+            border-bottom: 1px solid #eee;
+            background-color: #fff;
+        }
+
+        .modal-body-area {
+            padding: 30px;
+            overflow-y: auto;
+            max-height: calc(90vh - 120px);
+        }
+
+        .mini-chart-box {
+            text-align: center;
+            background: #fff;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-top: 15px;
+        }
+
+        .highlight-text {
+            background-color: #ffeb3b !important;
+            color: #000 !important;
+            font-weight: 900 !important;
+            padding: 2px 4px !important;
+            border-radius: 4px !important;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .spinner {
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid var(--secondary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
 
         @media (max-width: 768px) {
-            .ministry-filters { flex-direction: column; }
-            .project-block { grid-template-columns: 1fr; }
-            .pb-amount { text-align: left; margin-top: 10px; }
+            .ministry-filters {
+                flex-direction: column;
+            }
+
+            .project-block {
+                grid-template-columns: 1fr;
+            }
+
+            .pb-amount {
+                text-align: left;
+                margin-top: 10px;
+            }
         }
     </style>
 </head>
@@ -154,7 +415,8 @@
         <div class="card">
             <h3>預算計畫搜尋</h3>
             <div class="search-wrapper">
-                <input type="text" class="search-input-lg" placeholder="輸入關鍵字 (如: 非洲豬瘟, TPASS)..." oninput="handleSearchBudget(this.value)">
+                <input type="text" class="search-input-lg" placeholder="輸入關鍵字 (如: 非洲豬瘟, TPASS)..."
+                    oninput="handleSearchBudget(this.value)">
             </div>
             <div id="search-summary" class="search-summary-bar"></div>
             <div id="results-container-budget" style="margin-top:20px;">
@@ -169,10 +431,13 @@
             <span class="close-btn" onclick="closeModal(null, 'unifiedModal')">&times;</span>
             <div class="modal-header-area">
                 <h2 id="u-title" style="margin:0 0 10px 0; color:var(--primary-color); font-size:1.6rem;"></h2>
-                <div><span id="u-dept" class="pb-dept"></span><span id="u-amount" style="font-weight:900; color:var(--secondary-color); margin-left:15px; font-size:1.3rem;"></span></div>
+                <div><span id="u-dept" class="pb-dept"></span><span id="u-amount"
+                        style="font-weight:900; color:var(--secondary-color); margin-left:15px; font-size:1.3rem;"></span>
+                </div>
             </div>
             <div class="modal-body-area">
-                <div style="background:var(--bg-color); padding:20px; border-radius:12px; margin-bottom:25px; border:1px solid var(--border-color);">
+                <div
+                    style="background:var(--bg-color); padding:20px; border-radius:12px; margin-bottom:25px; border:1px solid var(--border-color);">
                     <strong style="color:var(--secondary-color); font-size:1.1rem;">計畫內容：</strong>
                     <div style="margin-top:10px;"><span id="u-desc" style="color:#333;"></span></div>
                 </div>
@@ -191,9 +456,9 @@
         const getQueryUrl = (gid) => `https://docs.google.com/spreadsheets/d/${FILE_ID}/gviz/tq?tqx=out:json&tq&gid=${gid}&_=${new Date().getTime()}`;
         const sourcePageA = getQueryUrl('612819456');
 
-        let allDataPageA = []; 
+        let allDataPageA = [];
         let currentSearchKeyword = '';
-        
+
         // 分頁變數
         let currentAgencyProjects = [], agencyCurrentPage = 1;
         let currentSearchResults = [], searchCurrentPage = 1;
@@ -214,11 +479,24 @@
         function formatCurrency(num) {
             let val = parseFloat(num);
             if (isNaN(val) || val === 0) return "0";
+
             let absVal = Math.abs(val);
-            if (absVal >= 1000000000000) return (val / 1000000000000).toFixed(1).replace(/\.0$/, '') + "兆";
-            if (absVal >= 100000000) return (val / 100000000).toFixed(1).replace(/\.0$/, '') + "億";
-            if (absVal >= 10000) return (val / 10000).toFixed(1).replace(/\.0$/, '') + "萬";
-            return val.toLocaleString() + "元";
+            let sign = val < 0 ? "-" : "";
+
+            if (absVal >= 1000000000000) {
+                return sign + (absVal / 1000000000000).toFixed(1).replace(/\.0$/, '') + "兆";
+            }
+            if (absVal >= 100000000) {
+                let yi = Math.floor(absVal / 100000000);
+                let wan = Math.round((absVal % 100000000) / 10000);
+                if (wan === 0) return sign + yi + "億";
+                return sign + yi + "億" + wan + "萬"; // 精準顯示如：2億2611萬
+            }
+            if (absVal >= 10000) {
+                let wan = (absVal / 10000).toFixed(1).replace(/\.0$/, '');
+                return sign + wan + "萬";
+            }
+            return sign + absVal.toLocaleString() + "元";
         }
 
         function highlightContent(text, keyword) {
@@ -234,7 +512,7 @@
 
         const tooltipCurrencyCallback = {
             callbacks: {
-                label: function(context) {
+                label: function (context) {
                     let label = context.dataset.label || '';
                     if (label) label += ': ';
                     if (context.raw !== null) label += formatCurrency(context.raw);
@@ -249,7 +527,7 @@
                 // 【優化】只請求一份試算表，速度更快
                 const resA = await fetch(sourcePageA);
                 const textA = await resA.text();
-                
+
                 const jsonData = JSON.parse(textA.substring(47, textA.length - 2));
                 const cols = jsonData.table.cols.map(c => c.label).filter(l => l !== '');
                 allDataPageA = jsonData.table.rows.map(row => {
@@ -257,11 +535,11 @@
                     row.c.forEach((cell, i) => { if (cols[i]) obj[cols[i]] = cell ? (cell.v !== null ? String(cell.v) : '') : ''; });
                     return obj;
                 });
-                
+
                 document.getElementById('loader').style.display = 'none';
-                
+
                 initFilters();
-                checkUrlParams(); 
+                checkUrlParams();
             } catch (error) {
                 console.error("資料庫載入失敗:", error);
                 document.getElementById('loader').innerHTML = '<p style="color:red; font-weight:bold;">資料讀取失敗，請確認 Google Sheet 權限設定。</p>';
@@ -295,7 +573,7 @@
             const ministrySelect = document.getElementById('bp-filter-ministry');
             const unitSelect = document.getElementById('bp-filter-unit');
             const selectedMinistry = ministrySelect.value;
-            
+
             // 連動選單
             if (selectedMinistry) {
                 const agencies = [...new Set(allDataPageA.filter(d => d['所屬部會'] === selectedMinistry).map(d => d['主管機關']))].filter(a => a).sort();
@@ -362,7 +640,7 @@
 
             currentSearchResults = allDataPageA.filter(r => {
                 const amt = parseMoney(r['預算金額']);
-                if (amt === 0) return false; 
+                if (amt === 0) return false;
                 if (String(r['計畫編號']).includes('000000') || String(r['計畫名稱']).includes('統刪')) return false;
 
                 let rawText = (r['計畫名稱'] + (r['工作內容'] || '') + (r['主管機關'] || '') + (r['分支計畫'] || '')).toLowerCase();
@@ -411,7 +689,7 @@
         }
 
         // 7. Modal 詳情與圖表
-        function closeModal(e, id) { if(e && e.target.id !== id && e.target.className !== 'close-btn') return; document.getElementById(id).style.display = 'none'; }
+        function closeModal(e, id) { if (e && e.target.id !== id && e.target.className !== 'close-btn') return; document.getElementById(id).style.display = 'none'; }
 
         // 【重構】開啟計畫詳情 (僅顯示計畫內容與圓餅圖)
         function openUnifiedDetail(id) {
@@ -422,15 +700,19 @@
             document.getElementById('u-dept').innerText = planData['主管機關'];
             document.getElementById('u-amount').innerText = formatCurrency(parseMoney(planData['預算金額']));
             document.getElementById('u-desc').innerHTML = highlightContent(planData['工作內容'] || '無', currentSearchKeyword);
-            
+
             // 圓餅圖
             let pieLabels = [], pieData = [];
             (planData['用途比例'] || '').split('|').forEach(item => {
                 let parts = item.split(':');
-                if (parts.length === 2) { pieLabels.push(parts[0].trim()); pieData.push(parseInt(parts[1].trim())); }
+                if (parts.length === 2) {
+                    pieLabels.push(parts[0].trim());
+                    // 【修正】改用 parseMoney() 處理，它會自動將千元單位 * 1000
+                    pieData.push(parseMoney(parts[1].trim()));
+                }
             });
-            
-            if(chartPieA) chartPieA.destroy();
+
+            if (chartPieA) chartPieA.destroy();
             chartPieA = new Chart(document.getElementById('chartDetailPie').getContext('2d'), {
                 type: 'pie', data: { labels: pieLabels, datasets: [{ data: pieData, backgroundColor: ['#E74C3C', '#F0C808', '#086788', '#2ECC71', '#9B59B6'] }] },
                 options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, tooltip: tooltipCurrencyCallback } }
@@ -444,4 +726,5 @@
 
     </script>
 </body>
+
 </html>
