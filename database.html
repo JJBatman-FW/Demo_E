@@ -479,7 +479,7 @@
         function formatCurrency(num) {
             let val = parseFloat(num);
             if (isNaN(val) || val === 0) return "0";
-
+            
             let absVal = Math.abs(val);
             let sign = val < 0 ? "-" : "";
 
@@ -487,14 +487,10 @@
                 return sign + (absVal / 1000000000000).toFixed(1).replace(/\.0$/, '') + "兆";
             }
             if (absVal >= 100000000) {
-                let yi = Math.floor(absVal / 100000000);
-                let wan = Math.round((absVal % 100000000) / 10000);
-                if (wan === 0) return sign + yi + "億";
-                return sign + yi + "億" + wan + "萬"; // 精準顯示如：2億2611萬
+                return sign + (absVal / 100000000).toFixed(1).replace(/\.0$/, '') + "億";
             }
             if (absVal >= 10000) {
-                let wan = (absVal / 10000).toFixed(1).replace(/\.0$/, '');
-                return sign + wan + "萬";
+                return sign + (absVal / 10000).toFixed(1).replace(/\.0$/, '') + "萬";
             }
             return sign + absVal.toLocaleString() + "元";
         }
