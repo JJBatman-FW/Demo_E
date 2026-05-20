@@ -687,8 +687,9 @@
             // 輔助函式：判斷是否符合關鍵字
             const matchKeywordCheck = (p, kw) => {
                 if (!kw) return true;
-                const searchTerms = kw.toLowerCase().split(/\s+/).filter(k => k);
-                const rawText = (p['計畫名稱'] + (p['工作內容'] || '') + (p['主管機關'] || '')).toLowerCase();
+                const searchTerms = kw.toLowerCase().split(/\s+/).filter(k=>k);
+                // 🔽 加上了 p['關鍵字']，把試算表裡用逗號分隔的字串一起串進來比對
+                const rawText = (p['計畫名稱'] + (p['工作內容']||'') + (p['主管機關']||'') + (p['關鍵字']||'')).toLowerCase();
                 return searchTerms.every(term => rawText.includes(term));
             };
 
