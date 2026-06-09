@@ -617,8 +617,12 @@
         }
 
         .step-scene.is-centered {
-            margin-left: 0 !important;
-            width: 100% !important;
+            justify-content: center !important;
+            padding-left: 0 !important;
+
+            /* 🚀 核心修正：利用 vw 徹底無視父層 padding，強行回拉並撐滿全螢幕 */
+            width: 100vw !important;
+            margin-left: -55vw !important;
         }
 
         .step-scene.is-centered .story-card {
@@ -626,12 +630,12 @@
             border: none !important;
             box-shadow: none !important;
             max-width: 850px !important;
+            /* 限制內文寬度，確保大螢幕上好閱讀 */
             text-align: center;
         }
 
         .step-scene.is-centered .story-card p {
             font-size: 1.35rem;
-            /* 字體稍微放大一點更有力 */
             line-height: 2;
             color: var(--text-main);
             font-weight: 500;
@@ -804,6 +808,11 @@
                 flex-direction: row;
                 height: 100%;
                 gap: 10px;
+            }
+
+            .step-scene.is-centered {
+                margin-left: 0 !important;
+                width: 100% !important;
             }
         }
     </style>
